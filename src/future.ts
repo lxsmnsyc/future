@@ -28,6 +28,9 @@
 import { FutureTransformer } from './transformer';
 import Computation from './computation';
 
+/**
+ * A deferred process/computation on a value.
+ */
 export default abstract class Future<T> {
   public compose<R>(transformer: FutureTransformer<T, R>): Future<R> {
     return transformer(this);
