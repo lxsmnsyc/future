@@ -30,7 +30,7 @@ import Computation from '../computation';
 import BooleanSubscription from '../utils/subscriptions/boolean-subscription';
 
 class FuturePromise<T> extends Future<T> {
-  constructor(private promise: Promise<T>) {
+  constructor(private promise: PromiseLike<T>) {
     super();
   }
 
@@ -48,6 +48,6 @@ class FuturePromise<T> extends Future<T> {
   }
 }
 
-export default function fromPromise<T>(promise: Promise<T>): Future<T> {
+export default function fromPromise<T>(promise: PromiseLike<T>): Future<T> {
   return new FuturePromise<T>(promise);
 }
