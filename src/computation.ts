@@ -5,6 +5,9 @@ type Resolve<T, R> = Function<T, R | PromiseLike<R>> | null | undefined;
 type Reject<R> = Function<any, R | PromiseLike<R>> | null | undefined;
 type Finally = Action | null | undefined;
 
+/**
+ * An instanciated, cancellable computation from a given Future.
+ */
 export default class Computation<T> implements Subscription {
   constructor(private result: Promise<T>, private subscription: Subscription) {}
 
