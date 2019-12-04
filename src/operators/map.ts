@@ -57,13 +57,17 @@ class FutureMap<T, R> extends Future<R> {
               result = this.mapper(value);
             } catch (err) {
               rej(err);
+              subscription.cancel();
               return;
             }
 
             res(result);
           }
         },
-        rej,
+        (err) => {
+          rej(err);
+          subscription.cancel();
+        },
       );
     })
 
