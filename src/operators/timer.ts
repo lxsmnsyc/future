@@ -27,36 +27,37 @@
  */
 import Future from '../future';
 import Computation from '../computation';
-import WithCallbacksSubscription from '../utils/subscriptions/with-callbacks-subscription';
+import { TimedScheduler } from '../scheduler';
+import Schedulers from '../schedulers';
+import CompositeSubscription from '../utils/subscriptions/composite-subscription';
 
 
 class FutureTimer<T> extends Future<T> {
   constructor(
     private value: T,
     private time: number,
+    private scheduler: TimedScheduler,
   ) {
     super();
   }
 
   get(): Computation<T> {
-    const subscription = new WithCallbacksSubscription();
+    const subscription = new CompositeSubscription();
 
     const promise = new Promise<T>((resolve) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
 
-      const timeout = setTimeout(() => {
+      const schedule = this.scheduler(() => {
         res(this.value);
       }, this.time);
 
-      subscription.addListener(() => {
-        clearTimeout(timeout);
-      });
+      subscription.add(schedule);
     });
 
     return new Computation<T>(promise, subscription);
   }
 }
 
-export default function timer<T>(value: T, time: number): Future<T> {
-  return new FutureTimer<T>(value, time);
+export default function timer<T>(value: T, time: number, scheduler: TimedScheduler = Schedulers.SYNC.TIMED): Future<T> {
+  return new FutureTimer<T>(value, time, scheduler);
 }
