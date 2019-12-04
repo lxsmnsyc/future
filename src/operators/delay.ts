@@ -28,20 +28,23 @@
 import Future from '../future';
 import Computation from '../computation';
 import { FutureTransformer } from '../transformer';
-import WithCallbacksSubscription from '../utils/subscriptions/with-callbacks-subscription';
+import { TimedScheduler } from '../scheduler';
+import Schedulers from '../schedulers';
+import CompositeSubscription from '../utils/subscriptions/composite-subscription';
 
 
 class FutureDelay<T> extends Future<T> {
   constructor(
     private future: Future<T>,
     private time: number,
+    private scheduler: TimedScheduler,
     private immediateRejection: boolean,
   ) {
     super();
   }
 
   get(): Computation<T> {
-    const subscription = new WithCallbacksSubscription();
+    const subscription = new CompositeSubscription();
 
     const promise = new Promise<T>((resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
@@ -49,31 +52,27 @@ class FutureDelay<T> extends Future<T> {
 
       const computation = this.future.get();
   
-      subscription.addListener(() => {
-        computation.cancel();
-      });
+      subscription.add(computation);
 
       computation.then(
         value => { 
-          const timeout = setTimeout(() => {
+          const schedule = this.scheduler(() => {
             res(value);
           }, this.time);
-  
-          subscription.addListener(() => {
-            clearTimeout(timeout);
-          });
+          
+          subscription.add(schedule);
         },
         error => {
           if (this.immediateRejection) {
             rej(error);
+            subscription.cancel();
           } else {
-            const timeout = setTimeout(() => {
+            const schedule = this.scheduler(() => {
               rej(error);
+              subscription.cancel();
             }, this.time);
-    
-            subscription.addListener(() => {
-              clearTimeout(timeout);
-            });
+            
+            subscription.add(schedule);
           }
         },
       ); 
@@ -83,6 +82,6 @@ class FutureDelay<T> extends Future<T> {
   }
 }
 
-export default function delay<T>(time: number, immediateRejection: boolean = false): FutureTransformer<T, T> {
-  return (future: Future<T>): Future<T> => new FutureDelay<T>(future, time, immediateRejection);
+export default function delay<T>(time: number, scheduler: TimedScheduler = Schedulers.SYNC.TIMED, immediateRejection: boolean = false): FutureTransformer<T, T> {
+  return (future: Future<T>): Future<T> => new FutureDelay<T>(future, time, scheduler, immediateRejection);
 }
