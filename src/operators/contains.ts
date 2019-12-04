@@ -56,10 +56,15 @@ class FutureContains<A, B> extends Future<boolean> {
             result = this.comparer(value, this.value);
           } catch (err) {
             rej(err);
+            subscription.cancel();
             return;
           }
 
           res(result);
+        },
+        (err) => {
+          rej(err);
+          subscription.cancel();
         },
       );
     });
