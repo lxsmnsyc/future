@@ -29,45 +29,50 @@ import Future from '../future';
 import Computation from '../computation';
 import CompositeSubscription from '../utils/subscriptions/composite-subscription';
 
-
-class FutureMerge<T> extends Future<T> {
+class FutureMerge<S extends Future<any>[]> extends Future<unknown> {
   constructor(
-    private future: Future<Future<T>>,
+    private sources: S,
   ) {
     super();
   }
 
-  get(): Computation<T> {
+  get(): Computation<unknown> {
     const subscription = new CompositeSubscription();
+    const main = new CompositeSubscription();
 
-    const promise = new Promise<T>((resolve, reject) => {
-      const res = (value: T) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
+    main.add(subscription);
 
-      const computation = this.future.get();
+    const promise = new Promise<unknown>((resolve, reject) => {
+      const res = () => !main.cancelled && resolve();
+      const rej = (value: Error) => !main.cancelled && reject(value);
 
-      computation.then(
-        value => {
-          if (!subscription.cancelled) {
-            const newComputation = value.get();
+      let size = this.sources.length;
 
-            subscription.add(newComputation);
-            
-            newComputation.then(res, rej);
-          }
-        },
-        rej,
-      );
+      this.sources.forEach((source) => {
+        const computation = source.get();
+
+        subscription.add(computation);
+  
+        computation.then(
+          _ => {
+            size -= 1;
+
+            if (size === 0) {
+              res();
+            }
+          },
+          err => {
+            rej(err);
+            subscription.cancel();
+          },
+        )
+      });
     });
 
-    return new Computation<T>(promise, subscription);
+    return new Computation<unknown>(promise, subscription);
   }
 }
 
-/**
- * Transforms the resolved value of the given Future.
- * @param mapper a function that transforms the resolved value
- */
-export default function merge<T>(future: Future<Future<T>>): Future<T> {
-  return new FutureMerge<T>(future);
+export default function merge<S extends Future<any>[]>(sources: S): Future<unknown> {
+  return new FutureMerge<S>(sources);
 }
