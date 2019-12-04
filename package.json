@@ -10,6 +10,7 @@
     "dist"
   ],
   "scripts": {
+    "docs": "typedoc",
     "start": "tsdx watch",
     "build": "tsdx build",
     "test": "tsdx test",
@@ -24,6 +25,7 @@
     "eslint-config-airbnb-base": "^14.0.0",
     "tsdx": "^0.11.0",
     "tslib": "^1.10.0",
+    "typedoc": "^0.15.3",
     "typescript": "^3.7.2"
   },
   "description": "Extension to the ES6 Promise",
