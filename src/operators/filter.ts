@@ -59,6 +59,7 @@ class FutureFilter<T> extends Future<T> {
             result = this.predicate(value);
           } catch (err) {
             rej(err);
+            subscription.cancel();
             return;
           }
 
@@ -66,7 +67,10 @@ class FutureFilter<T> extends Future<T> {
             res(value);
           }
         },
-        rej,
+        (err) => {
+          rej(err);
+          subscription.cancel();
+        },
       );
     });
 
