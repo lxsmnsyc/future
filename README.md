@@ -91,7 +91,8 @@ const delayedHelloWorld = Future.create((emitter) => {
 For example, if we want to modify the resolved value of a `Future`, we can use `map`:
 
 ```typescript
-const greeting = Future.success('Hello').compose(Future.map(value => `${value} World`));
+const greeting = Future.success('Hello')
+  .compose(Future.map(value => `${value} World`));
 
 greeting.get().then(console.log); // Hello World
 ```
