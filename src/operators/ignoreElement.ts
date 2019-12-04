@@ -50,7 +50,10 @@ class FutureIgnoreElement extends Future<unknown> {
         _ => {
           res();
         },
-        rej,
+        (err) => {
+          rej(err);
+          subscription.cancel();
+        },
       );
     })
 
