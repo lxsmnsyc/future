@@ -33,6 +33,8 @@ export { default as Computation } from './computation';
 export { default as Emitter } from './emitter';
 export { FutureTransformer as Transformer } from './transformer';
 export { default as Subscription } from './subscription';
+export { Scheduler, TimedScheduler } from './scheduler';
+export { default as Schedulers } from './schedulers';
 
 /**
  * Constructors
@@ -41,8 +43,11 @@ export { default as amb } from './operators/amb';
 export { default as create } from './operators/create';
 export { default as defer } from './operators/defer';
 export { default as failure } from './operators/failure';
+export { default as fromAction } from './operators/fromAction';
+export { default as fromAsync } from './operators/fromAsync';
 export { default as fromPromise } from './operators/fromPromise';
 export { default as fromSupplier } from './operators/fromSupplier';
+export { default as flatten } from './operators/flatten';
 export { default as merge } from './operators/merge';
 export { default as never } from './operators/never';
 export { default as success } from './operators/success';
@@ -53,7 +58,11 @@ export { default as zip } from './operators/zip';
  * Operators
  */
 export { default as ambWith } from './operators/ambWith';
+export { default as andThen } from './operators/andThen';
+export { default as andThenPromise } from './operators/andThenPromise';
+export { default as cache } from './operators/cache';
 export { default as contains } from './operators/contains';
+export { default as computeOn } from './operators/computeOn';
 export { default as delay } from './operators/delay';
 export { default as doFinally } from './operators/doFinally';
 export { default as doOnCancel } from './operators/doOnCancel';
@@ -65,6 +74,8 @@ export { default as filter } from './operators/filter';
 export { default as flatMap } from './operators/flatMap';
 export { default as ignoreElement } from './operators/ignoreElement';
 export { default as map } from './operators/map';
+export { default as mergeWith } from './operators/mergeWith';
+export { default as observeOn } from './operators/observeOn';
 export { default as onErrorResume } from './operators/onErrorResume';
 export { default as onErrorResumeNext } from './operators/onErrorResumeNext';
 export { default as onErrorReturn } from './operators/onErrorReturn';
