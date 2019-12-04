@@ -54,7 +54,7 @@ class FutureRetryUntil<T> extends Future<T> {
         computation.then(res, error => {
           if (this.until(error)) {
             rej(error);
-            computation.cancel();
+            subscription.cancel();
           } else {
             subscription.remove(computation);
             computation.cancel();
