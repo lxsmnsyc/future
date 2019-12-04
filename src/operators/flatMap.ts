@@ -59,6 +59,7 @@ class FutureFlatMap<T, R> extends Future<R> {
               result = this.mapper(value);
             } catch (err) {
               rej(err);
+              subscription.cancel();
               return;
             }
 
@@ -66,10 +67,16 @@ class FutureFlatMap<T, R> extends Future<R> {
 
             subscription.add(newComputation);
             
-            newComputation.then(res, rej);
+            newComputation.then(res, (err) => {
+              rej(err);
+              subscription.cancel();
+            });
           }
         },
-        rej,
+        (err) => {
+          rej(err);
+          subscription.cancel();
+        },
       );
     });
 
