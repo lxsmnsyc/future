@@ -27,20 +27,23 @@
  */
 import Future from '../future';
 import { FutureTransformer } from '../transformer';
-import WithCallbacksSubscription from '../utils/subscriptions/with-callbacks-subscription';
 import Computation from '../computation';
+import { TimedScheduler } from '../scheduler';
+import Schedulers from '../schedulers';
 import TimeoutError from '../utils/errors/timeout-error';
+import CompositeSubscription from '../utils/subscriptions/composite-subscription';
 
 class FutureTimeout<T> extends Future<T> {
   constructor(
     private future: Future<T>,
     private time: number,
+    private scheduler: TimedScheduler
   ) {
     super();
   }
 
   get(): Computation<T> {
-    const subscription = new WithCallbacksSubscription();
+    const subscription = new CompositeSubscription();
 
     const promise = new Promise<T>((resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
@@ -48,14 +51,14 @@ class FutureTimeout<T> extends Future<T> {
 
       const computation = this.future.get();
 
-      subscription.addListener(() => computation.cancel());
+      subscription.add(computation);
 
-      const timeout = setTimeout(() => {
+      const schedule = this.scheduler(() => {
         rej(new TimeoutError());
         subscription.cancel();
       }, this.time);
 
-      subscription.addListener(() => clearTimeout(timeout));
+      subscription.add(schedule);
 
       computation.then(
         res,
@@ -70,6 +73,6 @@ class FutureTimeout<T> extends Future<T> {
   }
 }
 
-export default function timeout<T>(time: number): FutureTransformer<T, T> {
-  return (future: Future<T>): Future<T> => new FutureTimeout<T>(future, time);
+export default function timeout<T>(time: number, scheduler: TimedScheduler = Schedulers.SYNC.TIMED): FutureTransformer<T, T> {
+  return (future: Future<T>): Future<T> => new FutureTimeout<T>(future, time, scheduler);
 }
