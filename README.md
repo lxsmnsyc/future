@@ -97,7 +97,15 @@ const greeting = Future.success('Hello')
 greeting.get().then(console.log); // Hello World
 ```
 
-### Writing with Async functions
+### Computation vs Future
+
+There are two core classes in this library: Futures and Computation.
+
+To clarify, a Computation is an instance received by calling the `Future#get`. A Future tells how a Computation instance should run its logic.
+
+## Documentation
+
+Full documentation is available [here](https://lxsmnsyc.github.io/future).
 
 ## Build
 
