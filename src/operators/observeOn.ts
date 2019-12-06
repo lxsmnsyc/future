@@ -73,6 +73,21 @@ class FutureObserveOn<T> extends Future<T> {
   }
 }
 
+/**
+ * Observes the resolved/rejected values of the [[Computation]] on
+ * a given [[Scheduler]]
+ * 
+ * ```typescript
+ * Future.success('Hello World')
+ *  .compose(Future.observeOn(Future.Schedulers.SYNC.NOW))
+ *  .get()
+ *  .then(console.log);
+ * ```
+ * 
+ * @category Transformers
+ * @param scheduler Where to observe the values
+ * @typeparam T type of the computed value
+ */
 export default function observeOn<T>(scheduler: Scheduler): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureObserveOn<T>(future, scheduler);
 }

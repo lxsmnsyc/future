@@ -43,6 +43,19 @@ class FutureSuccess<T> extends Future<T> {
   }
 }
 
+/**
+ * Resolves with the given value
+ * 
+ * ```typescript
+ * Future.success('Hello World')
+ *  .get()
+ *  .then(console.log); // Hello World
+ * ```
+ * 
+ * @category Constructors
+ * @param value 
+ * @typeparam T type of the given value
+ */
 export default function success<T>(value: T): Future<T> {
   return new FutureSuccess<T>(value);
 }

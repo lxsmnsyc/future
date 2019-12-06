@@ -25,6 +25,12 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2019
  */
+
+/**
+ * Represents the cancellation/disposal logic for a [[Computation]].
+ *
+ * @category Core
+ */
 export default interface Subscription {
   cancel: () => void;
 }

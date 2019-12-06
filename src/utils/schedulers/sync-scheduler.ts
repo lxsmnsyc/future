@@ -31,6 +31,12 @@ import { Action } from '../types/function';
 import WithCallbacksSubscription from '../subscriptions/with-callbacks-subscription';
 import EmptySubscription from '../subscriptions/empty-subscription';
 
+
+/**
+ * Schedules an [[Action]] synchronously and executes thereafter.
+ * @param action
+ * @category Schedulers
+ */
 export const SyncScheduler: Scheduler = (action: Action) => {
   const promise = new Promise((resolve, reject) => {
     try {
@@ -46,6 +52,11 @@ export const SyncScheduler: Scheduler = (action: Action) => {
   return new Computation<unknown>(promise, EmptySubscription.INSTANCE);
 };
 
+/**
+ * Schedules an [[Action]] synchronously and executes after a given time delay.
+ * @param action
+ * @category Schedulers
+ */
 export const SyncTimedScheduler: TimedScheduler = (action: Action, time: number) => {
   const subscription = new WithCallbacksSubscription();
 

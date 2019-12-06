@@ -60,6 +60,15 @@ class FutureRetry<T> extends Future<T> {
   }
 }
 
+/**
+ * Retries a rejected [[Computation]] until it resolves.
+ * 
+ * ```typescript
+ * proneToErrorFuture.compose(Future.retry());
+ * ```
+ * @category Transformers
+ * @typeparam T type of the computed value
+ */
 export default function retry<T>(): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureRetry<T>(future);
 }

@@ -1,0 +1,485 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@lxsmnsyc/future</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">@lxsmnsyc/future</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> @lxsmnsyc/future</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#lxsmnsycfuture" id="lxsmnsycfuture" style="color: inherit; text-decoration: none;">
+					<h1>@lxsmnsyc/future</h1>
+				</a>
+				<blockquote>
+					<p>Extension to the ES6 Promise; much better reactivity in JavaScript.</p>
+				</blockquote>
+				<p><a href="https://www.npmjs.com/package/@lxsmnsyc/future"><img src="https://img.shields.io/npm/v/@lxsmnsyc/future.svg" alt="NPM"></a> <a href="https://standardjs.com"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="JavaScript Style Guide"></a></p>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h2>Install</h2>
+				</a>
+				<pre><code class="language-bash">npm install --save @lxsmnsyc/future</code></pre>
+				<pre><code class="language-bash">yarn add @lxsmnsyc/future</code></pre>
+				<a href="#introduction" id="introduction" style="color: inherit; text-decoration: none;">
+					<h2>Introduction</h2>
+				</a>
+				<p><code>@lxsmnsyc/future</code> attemps to extend the functionality and solve some problems that exists with the current ES6 Promise.</p>
+				<p>First difference about <code>Futures</code> against <code>Promises</code> is that the computation is deferred: You can compose <code>Futures</code> without evaluating/scheduling the computation already, which is good specially if you want to
+				compose your own logic, as well as, since <code>Promises</code>&#39; resolution callback executes synchronously, you can choose when will the <code>Future</code> run its computation.</p>
+				<p>By summary: <code>Futures</code> are the cold version of <code>Promises</code>.</p>
+				<pre><code class="language-typescript">
+<span class="hljs-comment">// No computation being processed</span>
+<span class="hljs-keyword">const</span> delayedHelloWorld = Future.success(<span class="hljs-string">'Hello'</span>).pipe(
+  Future.map(<span class="hljs-function"><span class="hljs-params">value</span> =&gt;</span> <span class="hljs-string">`<span class="hljs-subst">${value}</span> World`</span>),
+  Future.delay(<span class="hljs-number">500</span>),
+);
+
+<span class="hljs-comment">// Begin computation</span>
+<span class="hljs-keyword">const</span> computation = delayedHelloWorld.get();
+
+<span class="hljs-comment">// get the computed value</span>
+computation.then(<span class="hljs-function">(<span class="hljs-params">value</span>) =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Success: '</span>, value);
+});
+
+<span class="hljs-comment">// or</span>
+<span class="hljs-keyword">const</span> value = <span class="hljs-keyword">await</span> computation;
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Success: '</span>, value);</code></pre>
+				<p>Another difference is that <code>Futures</code> are cancellable. Disposing logic in <code>Promises</code> has been a problem, and <code>Futures</code> helps you with that. If a <code>Future</code> is cancelled, the computation stops and the asynchronous value will not be resolved. If you start a <code>Future</code> inside an async function, await its value, and cancels it before it has finished its computation, the async function will not continue executing.</p>
+				<pre><code class="language-typescript"><span class="hljs-comment">// Begin computation</span>
+<span class="hljs-keyword">const</span> computation = delayedHelloWorld.get();
+
+<span class="hljs-comment">// get the computed value</span>
+computation.then(<span class="hljs-function">(<span class="hljs-params">value</span>) =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Success: '</span>, value);
+});
+
+<span class="hljs-comment">// cancel the computation before it finishes</span>
+computation.cancel();</code></pre>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h2>Usage</h2>
+				</a>
+				<a href="#creating-futures" id="creating-futures" style="color: inherit; text-decoration: none;">
+					<h3>Creating Futures</h3>
+				</a>
+				<p><code>Future.create</code> is the basic operator for building your own computation logic for a <code>Future</code>.</p>
+				<p>Example below is a <code>Future</code> that resolves <code>Hello World</code> after 500 ms.</p>
+				<pre><code class="language-typescript"><span class="hljs-comment">// Create our Future</span>
+<span class="hljs-keyword">const</span> delayedHelloWorld = Future.create(<span class="hljs-function">(<span class="hljs-params">emitter</span>) =&gt;</span> {
+  <span class="hljs-comment">// create a timer</span>
+  <span class="hljs-keyword">const</span> timeout = setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-comment">// resolve the value</span>
+    emitter.success(<span class="hljs-string">'Hello World'</span>);
+  }, <span class="hljs-number">500</span>);
+
+  <span class="hljs-comment">// Make sure to cleanup our timer</span>
+  emitter.onCancel(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    clearTimeout(timeout);
+  });
+});</code></pre>
+				<a href="#composing-futures" id="composing-futures" style="color: inherit; text-decoration: none;">
+					<h3>Composing Futures</h3>
+				</a>
+				<p><code>Futures</code> have two methods that allows you to transform the <code>Future</code> into a another <code>Future</code> with different computation logic: <code>compose</code> which accepts a transformation function and <code>pipe</code> which accepts multiple.</p>
+				<p>For example, if we want to modify the resolved value of a <code>Future</code>, we can use <code>map</code>:</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">const</span> greeting = Future.success(<span class="hljs-string">'Hello'</span>)
+  .compose(Future.map(<span class="hljs-function"><span class="hljs-params">value</span> =&gt;</span> <span class="hljs-string">`<span class="hljs-subst">${value}</span> World`</span>));
+
+greeting.get().then(<span class="hljs-built_in">console</span>.log); <span class="hljs-comment">// Hello World</span></code></pre>
+				<a href="#computation-vs-future" id="computation-vs-future" style="color: inherit; text-decoration: none;">
+					<h3>Computation vs Future</h3>
+				</a>
+				<p>There are two core classes in this library: Futures and Computation.</p>
+				<p>To clarify, a Computation is an instance received by calling the <code>Future#get</code>. A Future tells how a Computation instance should run its logic.</p>
+				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
+					<h2>Documentation</h2>
+				</a>
+				<p>Full documentation is available <a href="https://lxsmnsyc.github.io/future">here</a>.</p>
+				<a href="#build" id="build" style="color: inherit; text-decoration: none;">
+					<h2>Build</h2>
+				</a>
+				<p>This project is bootstraped with <a href="https://github.com/jaredpalmer/tsdx">TSDX</a> with minor changes.</p>
+				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+					<h2>License</h2>
+				</a>
+				<p>MIT © <a href="https://github.com/lxsmnsyc">lxsmnsyc</a></p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class">
+						<a href="classes/booleansubscription.html" class="tsd-kind-icon">Boolean<wbr>Subscription</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/compositesubscription.html" class="tsd-kind-icon">Composite<wbr>Subscription</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/computation.html" class="tsd-kind-icon">Computation</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/emptysubscription.html" class="tsd-kind-icon">Empty<wbr>Subscription</a>
+					</li>
+					<li class=" tsd-kind-class tsd-has-type-parameter">
+						<a href="classes/future.html" class="tsd-kind-icon">Future</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/timeouterror.html" class="tsd-kind-icon">Timeout<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/withcallbackssubscription.html" class="tsd-kind-icon">With<wbr>Callbacks<wbr>Subscription</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/withupstreamsubscription.html" class="tsd-kind-icon">With<wbr>Upstream<wbr>Subscription</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-has-type-parameter">
+						<a href="interfaces/futureemitter.html" class="tsd-kind-icon">Future<wbr>Emitter</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/subscription.html" class="tsd-kind-icon">Subscription</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#action" class="tsd-kind-icon">Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#asyncfunction" class="tsd-kind-icon">Async<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#consumer" class="tsd-kind-icon">Consumer</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#consumer2" class="tsd-kind-icon">Consumer2</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#function" class="tsd-kind-icon">Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#function2" class="tsd-kind-icon">Function2</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#futuretransformer" class="tsd-kind-icon">Future<wbr>Transformer</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#oncancel" class="tsd-kind-icon">On<wbr>Cancel</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#predicate" class="tsd-kind-icon">Predicate</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#predicate2" class="tsd-kind-icon">Predicate2</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#promiseprotect" class="tsd-kind-icon">Promise<wbr>Protect</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#scheduler" class="tsd-kind-icon">Scheduler</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#supplier" class="tsd-kind-icon">Supplier</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#timedscheduler" class="tsd-kind-icon">Timed<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#animationframescheduler" class="tsd-kind-icon">Animation<wbr>Frame<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#animationframetimedscheduler" class="tsd-kind-icon">Animation<wbr>Frame<wbr>Timed<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#immediatescheduler" class="tsd-kind-icon">Immediate<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#immediatetimedscheduler" class="tsd-kind-icon">Immediate<wbr>Timed<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#promisescheduler" class="tsd-kind-icon">Promise<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#promisedtimedscheduler" class="tsd-kind-icon">Promised<wbr>Timed<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#syncscheduler" class="tsd-kind-icon">Sync<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#synctimedscheduler" class="tsd-kind-icon">Sync<wbr>Timed<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#timeoutscheduler" class="tsd-kind-icon">Timeout<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#timeouttimedscheduler" class="tsd-kind-icon">Timeout<wbr>Timed<wbr>Scheduler</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#amb" class="tsd-kind-icon">amb</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#ambwith" class="tsd-kind-icon">amb<wbr>With</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#andthen" class="tsd-kind-icon">and<wbr>Then</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#andthenpromise" class="tsd-kind-icon">and<wbr>Then<wbr>Promise</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#cache" class="tsd-kind-icon">cache</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#computeon" class="tsd-kind-icon">compute<wbr>On</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#concat" class="tsd-kind-icon">concat</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#contains" class="tsd-kind-icon">contains</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#create" class="tsd-kind-icon">create</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#defaultifempty" class="tsd-kind-icon">default<wbr>IfEmpty</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#defer" class="tsd-kind-icon">defer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#delay" class="tsd-kind-icon">delay</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#dofinally" class="tsd-kind-icon">do<wbr>Finally</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#dooncancel" class="tsd-kind-icon">do<wbr>OnCancel</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#doonevent" class="tsd-kind-icon">do<wbr>OnEvent</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#doonfailure" class="tsd-kind-icon">do<wbr>OnFailure</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#doonsuccess" class="tsd-kind-icon">do<wbr>OnSuccess</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#doonterminate" class="tsd-kind-icon">do<wbr>OnTerminate</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#failure" class="tsd-kind-icon">failure</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#filter" class="tsd-kind-icon">filter</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#flatmap" class="tsd-kind-icon">flat<wbr>Map</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#flatten" class="tsd-kind-icon">flatten</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#fromaction" class="tsd-kind-icon">from<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#fromasync" class="tsd-kind-icon">from<wbr>Async</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#frompromise" class="tsd-kind-icon">from<wbr>Promise</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#fromsupplier" class="tsd-kind-icon">from<wbr>Supplier</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ignoreelement" class="tsd-kind-icon">ignore<wbr>Element</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#map" class="tsd-kind-icon">map</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#merge" class="tsd-kind-icon">merge</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#mergewith" class="tsd-kind-icon">merge<wbr>With</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#never" class="tsd-kind-icon">never</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#observeon" class="tsd-kind-icon">observe<wbr>On</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#onerrorresume" class="tsd-kind-icon">on<wbr>Error<wbr>Resume</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#onerrorresumenext" class="tsd-kind-icon">on<wbr>Error<wbr>Resume<wbr>Next</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#onerrorreturn" class="tsd-kind-icon">on<wbr>Error<wbr>Return</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#onerrorreturnitem" class="tsd-kind-icon">on<wbr>Error<wbr>Return<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#retry" class="tsd-kind-icon">retry</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#retrycounted" class="tsd-kind-icon">retry<wbr>Counted</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#retrytimed" class="tsd-kind-icon">retry<wbr>Timed</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#retryuntil" class="tsd-kind-icon">retry<wbr>Until</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#subscribeon" class="tsd-kind-icon">subscribe<wbr>On</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#success" class="tsd-kind-icon">success</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#switchifempty" class="tsd-kind-icon">switch<wbr>IfEmpty</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#timeout" class="tsd-kind-icon">timeout</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#timer" class="tsd-kind-icon">timer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#zip" class="tsd-kind-icon">zip</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#zipwith" class="tsd-kind-icon">zip<wbr>With</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

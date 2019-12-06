@@ -25,8 +25,13 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2019
  */
+
+/**
+ * Represents the failure for a [[Computation]] instance to resolve
+ * within the given timeout.
+ */
 export default class TimeoutError extends Error {
-  constructor() {
-    super('Computation timed out first before successfully resolving.')
+  constructor(time: number) {
+    super(`Computation timed out first before successfully resolving within ${time}ms.`);
   }
 }

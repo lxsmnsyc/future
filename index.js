@@ -1,6 +1,26 @@
 const Future = require('./dist');
 
-// Create our Future
-const A = Future.timer('Hello World', 500).compose(Future.timeout(400));
+const delayedHelloWorld = Future.fromAsync(async (onCancel, protect) => {
+  // Construct a delayed promise
+  const delayed = new Promise((resolve, reject) => {
+    // create the timeout
+    const timeout = setTimeout(() => {
+      resolve('Hello');
+    }, 500);
 
-A.get().then(console.log, console.error);
+    // register cancellation
+    onCancel(() => {
+      clearTimeout(timeout);
+    });
+  });
+
+  // get the value
+  const value = await protect(delayed); // do not resolve if cancelled.
+
+  // return the value
+  return `${value} World`;
+});
+
+const computation = delayedHelloWorld.get();
+
+computation.then(console.log);

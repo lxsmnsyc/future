@@ -27,9 +27,9 @@
  * @copyright Alexis Munsayac 2019
  */
 import Future from '../future';
-import failure from './failure';
 import { Supplier } from '../utils/types/function';
 import Computation from '../computation';
+import CompositeSubscription from '../utils/subscriptions/composite-subscription';
 
 class FutureDefer<T> extends Future<T> {
   constructor(private supplier: Supplier<Future<T>>) {
@@ -37,21 +37,48 @@ class FutureDefer<T> extends Future<T> {
   }
 
   get(): Computation<T> {
-    let result;
+    const subscription = new CompositeSubscription();
 
-    try {
-      result = this.supplier();
-    } catch (err) {
-      result = failure<T>(err);
-    }
+    const promise = new Promise<T>((resolve, reject) => {
+      const res = (value: T) => !subscription.cancelled && resolve(value);
+      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
-    return result.get();
+      let result;
+
+      try {
+        result = this.supplier();
+      } catch (err) {
+        rej(err);
+        subscription.cancel();
+        return;
+      }
+
+      const computation = result.get();
+
+      subscription.add(computation);
+
+      computation.then(res, err => {
+        rej(err);
+        subscription.cancel();
+      });
+
+    });
+  
+    return new Computation<T>(promise, subscription);
   }
 }
 
 /**
- * A deferred supplier of Future
+ * A deferred supplier of [[Future]]
+ * 
+ * ```typescript
+ * Future.defer(() => Future.success('Hello'))
+ *  .get()
+ *  .then(console.log);
+ * ```
+ * @category Constructors
  * @param supplier A function which returns a Future
+ * @typeparam T type of computed value
  */
 export default function defer<T>(supplier: Supplier<Future<T>>): Future<T> { 
   return new FutureDefer<T>(supplier);

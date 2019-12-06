@@ -29,7 +29,7 @@ import Future from '../future';
 import { FutureTransformer } from '../transformer';
 import { Predicate } from '../utils/types/function';
 import Computation from '../computation';
-import { WithUpstreamSubscription } from '../utils/subscriptions/with-upstream-subscription';
+import WithUpstreamSubscription from '../utils/subscriptions/with-upstream-subscription';
 
 class FutureFilter<T> extends Future<T> {
   constructor(
@@ -79,7 +79,8 @@ class FutureFilter<T> extends Future<T> {
 }
 
 /**
- * Resolves the given Future if the resolved value passes the given predicate.
+ * Resolves the given [[Future]] if the resolved value passes the given predicate.
+ * @category Transformers
  * @param predicate 
  */
 export default function filter<T>(predicate: Predicate<T>): FutureTransformer<T, T> {

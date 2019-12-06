@@ -90,6 +90,25 @@ class FutureZip<S extends Future<any>[], T extends any[], R> extends Future<R> {
   }
 }
 
+/**
+ * Combines and resolves the outputs of the given array of [[Future]]
+ * computations.
+ * 
+ * ```typescript
+ * const A = Future.timer('Hello', 500);
+ * const B = Future.timer('World', 250);
+ * 
+ * Future.zip([A, B], (a, b) => `${a} ${b}`)
+ *  .get()
+ *  .then(console.log); // 'Hello World'
+ * ```
+ * @category Constructors
+ * @param sources an array of [[Future]] instances.
+ * @param zipper a function that receives the output of the [[Future]] instances and outputs a combination.
+ * @typeparam S type of computed values of the [[Future]] instances.
+ * @typeparam B type of computed values to be received by the zipper function.
+ * @typeparam R type of the combination value.
+ */
 export default function zip<S extends Future<any>[], T extends any[], R>(sources: S, zipper: (...args: T) => R): Future<R> {
   return new FutureZip<S, T, R>(sources, zipper);
 }

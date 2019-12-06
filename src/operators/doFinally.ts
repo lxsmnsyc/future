@@ -56,6 +56,13 @@ class FutureDoFinally<T> extends Future<T> {
   }
 }
 
+/**
+ * Runs a side-effect with the given [[Action]] when a [[Computation]] instance
+ * resolves, rejects or gets cancelled.
+ * @category Transformers
+ * @param onFinally [[Action]] to be called.
+ * @typeparam T type of the computed value
+ */
 export default function doFinally<T>(onFinally: Action): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureDoFinally(future, onFinally);
 }

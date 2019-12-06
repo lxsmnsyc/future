@@ -31,6 +31,9 @@ import { AnimationFrameScheduler, AnimationFrameTimedScheduler } from "./utils/s
 import { TimeoutScheduler, TimeoutTimedScheduler } from "./utils/schedulers/timeout-scheduler";
 import { ImmediateScheduler, ImmediateTimedScheduler } from "./utils/schedulers/immediate-scheduler";
 
+/**
+ * Constants for our schedulers
+ */
 const Schedulers = {
   SYNC: {
     NOW: SyncScheduler,

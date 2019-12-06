@@ -68,6 +68,21 @@ class FutureOnErrorResumeNext<T> extends Future<T> {
   }
 }
 
+/**
+ * Resolves a rejected [[Computation]] by shifting towards the
+ * computation of the given [[Future]].
+ * 
+ * ```typescript
+ * Future.failure(new Error('Bad'))
+ *  .compose(Future.onErrorResumeNext(Future.success('Hello World')))
+ *  .get()
+ *  .then(console.log);
+ * ```
+ *
+ * @category Transformers
+ * @param resume a [[Future]] to shift with.
+ * @typeparam T type of the computed value and resumed function result
+ */
 export default function onErrorResumeNext<T>(resume: Future<T>): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureOnErrorResumeNext(future, resume);
 }

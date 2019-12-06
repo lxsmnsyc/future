@@ -26,9 +26,9 @@
  * @copyright Alexis Munsayac 2019
  */
 import Future from '../future';
-import { Action } from '../utils/types/function';
 import Computation from '../computation';
 import { FutureTransformer } from '../transformer';
+import { Action } from '../utils/types/function';
 import WithCallbacksSubscription from '../utils/subscriptions/with-callbacks-subscription';
 
 class FutureDoOnCancel<T> extends Future<T> {
@@ -65,6 +65,13 @@ class FutureDoOnCancel<T> extends Future<T> {
   }
 }
 
+/**
+ * Runs a side-effect with the given [[Action]] when the [[Computation]] instance
+ * gets cancelled.
+ * @category Transformers
+ * @param onCancel an [[Action]] to be called
+ * @typeparam T type of the computed value 
+ */
 export default function doOnCancel<T>(onCancel: Action): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureDoOnCancel(future, onCancel);
 }

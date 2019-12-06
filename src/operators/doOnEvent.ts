@@ -26,10 +26,10 @@
  * @copyright Alexis Munsayac 2019
  */
 import Future from '../future';
-import { Consumer2 } from '../utils/types/function';
 import Computation from '../computation';
-import { WithUpstreamSubscription } from '../utils/subscriptions/with-upstream-subscription';
 import { FutureTransformer } from '../transformer';
+import { Consumer2 } from '../utils/types/function';
+import WithUpstreamSubscription from '../utils/subscriptions/with-upstream-subscription';
 
 class FutureDoOnEvent<T> extends Future<T> {
   constructor(
@@ -78,6 +78,13 @@ class FutureDoOnEvent<T> extends Future<T> {
   }
 }
 
+/**
+ * Registers a [[Consumer2]] that receives the resolved value on the first parameter or
+ * the rejected value on the second value 
+ * @category Transformers
+ * @param onEvent 
+ * @typeparam T type of the computed value.
+ */
 export default function doOnEvent<T>(onEvent: Consumer2<T | null, Error | null>): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureDoOnEvent<T>(future, onEvent);
 }

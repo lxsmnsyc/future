@@ -28,5 +28,14 @@
 import Computation from './computation';
 import { Function, Action, Function2 } from './utils/types/function';
 
+/**
+ * Schedules an [[Action]] and executes it thereafter.
+ * @category Core
+ */
 export type Scheduler = Function<Action, Computation<unknown>>;
+
+/**
+ * Schedules an [[Action]] with a given time delay and executes it thereafter.
+ * @category Core
+ */
 export type TimedScheduler = Function2<Action, number, Computation<unknown>>;

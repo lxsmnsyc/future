@@ -31,10 +31,16 @@ import CompositeSubscription from '../utils/subscriptions/composite-subscription
 import Computation from '../computation';
 import { Function2 } from '../utils/types/function';
 
+/**
+ * @ignore
+ */
 interface Value<T> {
   value: T,
 }
 
+/**
+ * @ignore
+ */
 class FutureZipWith<A, B, R> extends Future<R> {
   constructor(
     private future: Future<A>,
@@ -109,8 +115,22 @@ class FutureZipWith<A, B, R> extends Future<R> {
 }
 
 /**
- * Transforms the resolved value of the given Future.
- * @param mapper a function that transforms the resolved value
+ * Combines and resolves the output of this [[Future]] computation and the other [[Future]] computation.
+ * 
+ * ```typescript
+ * const A = Future.timer('Hello', 500);
+ * const B = Future.timer('World', 250);
+ * 
+ * A.compose(Future.zipWith(B, (a, b) => `${a} ${b}`))
+ *  .get()
+ *  .then(console.log); // 'Hello World'
+ * ```
+ * @category Transformers
+ * @param other a [[Future]] instance.
+ * @param zipper a function that receives the output of the two [[Future]] instances and outputs a combination.
+ * @typeparam A type of computed value for this [[Future]].
+ * @typeparam B type of computed value for the other [[Future]].
+ * @typeparam R type of the combination value.
  */
 export default function zipWith<A, B, R>(other: Future<B>, zipper: Function2<A, B, R>): FutureTransformer<A, R> {
   return (future: Future<A>): Future<R> => new FutureZipWith<A, B, R>(future, other, zipper);

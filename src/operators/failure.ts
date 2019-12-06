@@ -30,12 +30,12 @@ import Computation from '../computation';
 import EmptySubscription from '../utils/subscriptions/empty-subscription';
 
 
-class FutureFailure<T> extends Future<T> {
+class FutureFailure extends Future<unknown> {
   constructor(private error: Error) {
     super();
   }
 
-  get(): Computation<T> {
+  get(): Computation<unknown> {
     return new Computation(
       Promise.reject(this.error),
       EmptySubscription.INSTANCE,
@@ -43,6 +43,11 @@ class FutureFailure<T> extends Future<T> {
   }
 }
 
-export default function failure<T>(error: Error): Future<T> {
-  return new FutureFailure<T>(error);
+/**
+ * A [[Future]] that rejects with the given error
+ * @category Constructors
+ * @param error
+ */
+export default function failure(error: Error): Future<unknown> {
+  return new FutureFailure(error);
 }

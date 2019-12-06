@@ -84,9 +84,22 @@ class FutureFlatMap<T, R> extends Future<R> {
   }
 }
 
+
 /**
- * Transforms the resolved value of the given Future.
- * @param mapper a function that transforms the resolved value
+ * Transforms the resolved value by passing it through a transformer function
+ * that returns a [[Future]] instance.
+ * 
+ * ```typescript
+ * Future.success('Hello World')
+ *  .compose(Future.flatMap(value => Future.success(value)))
+ *  .get()
+ *  .then(console.log); // Hello World
+ * ```
+ *
+ * @category Transformers
+ * @param mapper
+ * @typeparam T type of the value to be received by the transformer.
+ * @typeparam R type of the valeu to be returned by the transformer.
  */
 export default function flatMap<T, R>(mapper: Function<T, Future<R>>): FutureTransformer<T, R> {
   return (future: Future<T>): Future<R> => new FutureFlatMap<T, R>(future, mapper);

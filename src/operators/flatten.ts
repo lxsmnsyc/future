@@ -70,9 +70,19 @@ class FutureFlatten<T> extends Future<T> {
   }
 }
 
+
 /**
- * Transforms the resolved value of the given Future.
- * @param mapper a function that transforms the resolved value
+ * Flattens a [[Future]] that resolves into a [[Future]].
+ * 
+ * ```typescript
+ * Future.flatten(Future.success(Future.success('Hello World')))
+ *  .get()
+ *  .then(console.log); // Hello World
+ * ```
+ * 
+ * @category Constructors
+ * @param future 
+ * @typeparam T type of the computed value from the resolved [[Future]].
  */
 export default function flatten<T>(future: Future<Future<T>>): Future<T> {
   return new FutureFlatten<T>(future);

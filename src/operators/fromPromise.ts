@@ -48,6 +48,19 @@ class FuturePromise<T> extends Future<T> {
   }
 }
 
+/**
+ * Transforms a Promise instance into a [[Future]].
+ * 
+ * ```typescript
+ * Future.fromPromise(Promise.resolve('Hello World'))
+ *  .get()
+ *  .then(console.log); // Hello World
+ * ```
+ * 
+ * @category Constructors
+ * @param promise 
+ * @typeparam T type of the Promise's resolved value
+ */
 export default function fromPromise<T>(promise: PromiseLike<T>): Future<T> {
   return new FuturePromise<T>(promise);
 }

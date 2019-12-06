@@ -28,31 +28,56 @@
 import Future from '../future';
 import Computation from '../computation';
 import BooleanSubscription from '../utils/subscriptions/boolean-subscription';
+import { FutureTransformer } from '../transformer';
 
 class FutureCache<T> extends Future<T> {
-  private computation: Computation<T>;
+  private computation?: Computation<T>;
 
-  constructor(future: Future<T>) {
+  constructor(private future: Future<T>) {
     super();
-
-    this.computation = future.get();
   }
 
   get(): Computation<T> {
+    if (!this.computation) {
+      this.computation = this.future.get();
+    }
+
     const subscription = new BooleanSubscription();
 
     const promise = new Promise<T>((resolve, reject) => {
-      this.computation.then(
-        value => !subscription.cancelled && resolve(value),
-        error => !subscription.cancelled && reject(error),
-      );
+      if (this.computation) {
+        this.computation.then(
+          value => !subscription.cancelled && resolve(value),
+          error => !subscription.cancelled && reject(error),
+        );
+      }
     });
 
     return new Computation<T>(promise, subscription);
   }
 }
 
-
-export default function cache<T>(future: Future<T>): Future<T> {
-  return new FutureCache<T>(future);
+/**
+ * Caches the initial computed value for the [[Future]] instance.
+ * 
+ * ```typescript
+ * // Create a Future
+ * const delayedHello = Future.timer('Hello', 500);
+ * 
+ * // Transform into a cached Future
+ * const cached = delayedHello.compose(Future.cache());
+ * 
+ * // Perform the initial computation
+ * cached.get().then(console.log);
+ * 
+ * // Try performing another computation
+ * setTimeout(() => {
+ *  cached.get().then(console.log); // resolves without delay
+ * }, 550);
+ * ```
+ * 
+ * @category Transformers
+ */
+export default function cache<T>(): FutureTransformer<T, T> {
+  return (future: Future<T>): Future<T> => new FutureCache<T>(future);
 }

@@ -73,6 +73,24 @@ class FutureMerge<S extends Future<any>[]> extends Future<unknown> {
   }
 }
 
+/**
+ * Runs the [[Computation]] instances from the given array of [[Future]] instances
+ * at the same time, resolving after all [[Computation]] has resolved, ignoring
+ * their values.
+ * 
+ * ```typescript
+ * const A = Future.timer('Hello', 500);
+ * const B = Future.timer('World', 400);
+ * 
+ * Future.merge([A, B])
+ *  .get()
+ *  .then(console.log); // Resolves with an empty value after 500ms
+ * ```
+ * 
+ * @category Constructors
+ * @param other A [[Future]] instance
+ * @typeparam S type of the Future array
+ */
 export default function merge<S extends Future<any>[]>(sources: S): Future<unknown> {
   return new FutureMerge<S>(sources);
 }

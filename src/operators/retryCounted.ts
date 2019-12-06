@@ -72,6 +72,17 @@ class FutureRetryCounted<T> extends Future<T> {
   }
 }
 
+/**
+ * Retries the rejected [[Computation]] rejecting with
+ * the recent error if it fails to resolve with the given amount of retries.
+ *
+ * ```typescript
+ * proneToErrorFuture.compose(Future.retryCounted(5));
+ * ```
+ * @category Transformers
+ * @param count the amount of retries
+ * @typeparam T the type of the computed value
+ */
 export default function retryCounted<T>(count: number): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureRetryCounted<T>(future, count);
 }

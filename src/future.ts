@@ -30,15 +30,54 @@ import Computation from './computation';
 
 /**
  * A deferred process/computation on a value.
+ * 
+ * Allows you to compose logic without starting the computation.
+ * 
+ * To begin a computation, a Future instance must be called with
+ * its `.get` method, which returns a [[Computation]] instance.
+ * 
+ * ```typescript
+ * // Create a Future that resolves the value 'Hello' after 500 ms.
+ * const delayedHello = Future.timer('Hello', 500);
+ * 
+ * // Begin its computation
+ * const computation = delayedHello.get();
+ * 
+ * // You can cancel the computation
+ * // computation.cancel();
+ * 
+ * // Output the resolved value
+ * computation.then(console.log); // 'Hello'
+ * ```
+ * @typeparam T type for the computed value
+ * @category Core
  */
 export default abstract class Future<T> {
+
+  /**
+   * Transforms this Future instance into another Future instance
+   * using the given [[FutureTransformer]] function.
+   * @param transformer A transformer function
+   * @return A transformed Future instance
+   */
   public compose<R>(transformer: FutureTransformer<T, R>): Future<R> {
     return transformer(this);
   }
 
+  /**
+   * Transforms this Future instance by passing it through an array of
+   * [[FutureTransformer]] functions, wherein the final Future instance
+   * is returned.
+   * @param transformers An array of transformer functions.
+   */
   public pipe(...transformers: FutureTransformer<any, any>[]): Future<any> {
     return transformers.reduce<Future<any>>((acc, transform) => transform(acc), this);
   }
 
+  /**
+   * Performs a computation.
+   * 
+   * @returns A [[Computation]] instance
+   */
   abstract get(): Computation<T>;
 }

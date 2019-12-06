@@ -26,10 +26,10 @@
  * @copyright Alexis Munsayac 2019
  */
 import Future from '../future';
-import { Action } from '../utils/types/function';
 import Computation from '../computation';
-import { WithUpstreamSubscription } from '../utils/subscriptions/with-upstream-subscription';
 import { FutureTransformer } from '../transformer';
+import { Action } from '../utils/types/function';
+import WithUpstreamSubscription from '../utils/subscriptions/with-upstream-subscription';
 
 class FutureDoOnTerminate<T> extends Future<T> {
   constructor(
@@ -78,6 +78,13 @@ class FutureDoOnTerminate<T> extends Future<T> {
   }
 }
 
-export default function doonTerminate<T>(onTerminate: Action): FutureTransformer<T, T> {
+/**
+ * Registers an [[Action]] that is called whenever a [[Computation]] resolves
+ * or rejects.
+ * @category Transformers
+ * @param onTerminate 
+ * @typeparam T type of the computed value
+ */
+export default function doOnTerminate<T>(onTerminate: Action): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureDoOnTerminate<T>(future, onTerminate);
 }

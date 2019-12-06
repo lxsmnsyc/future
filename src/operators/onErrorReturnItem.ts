@@ -28,7 +28,7 @@
 import Future from '../future';
 import { FutureTransformer } from '../transformer';
 import Computation from '../computation';
-import { WithUpstreamSubscription } from '../utils/subscriptions/with-upstream-subscription';
+import WithUpstreamSubscription from '../utils/subscriptions/with-upstream-subscription';
 
 class FutureOnErrorReturnItem<T> extends Future<T> {
   constructor(
@@ -53,6 +53,20 @@ class FutureOnErrorReturnItem<T> extends Future<T> {
   }
 }
 
+/**
+ * Resolves a rejected [[Computation]] with the given item
+ * 
+ * ```typescript
+ * Future.failure(new Error('Bad'))
+ *  .compose(Future.onErrorReturnItem('Hello World'))
+ *  .get()
+ *  .then(console.log);
+ * ```
+ * 
+ * @category Transformers
+ * @param item item to resolve with after rejection
+ * @typeparam T type of the computed and given item
+ */
 export default function onErrorReturnItem<T>(item: T): FutureTransformer<T, T> {
-  return (future: Future<T>): Future<T> => new FutureOnErrorReturnItem(future, item);
+  return (future: Future<T>): Future<T> => new FutureOnErrorReturnItem<T>(future, item);
 }

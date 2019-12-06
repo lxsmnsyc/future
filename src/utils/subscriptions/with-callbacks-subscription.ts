@@ -28,6 +28,10 @@
 import { Action } from '../types/function';
 import BooleanSubscription from './boolean-subscription';
 
+/**
+ * A [[Subscription]] that allows cancellation callbacks.
+ * @category Subscriptions
+ */
 export default class WithCallbacksSubscription extends BooleanSubscription {
   private listeners: Set<Action> = new Set<Action>();
 

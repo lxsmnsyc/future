@@ -31,6 +31,11 @@ import { Action } from '../types/function';
 import BooleanSubscription from '../subscriptions/boolean-subscription';
 import WithCallbacksSubscription from '../subscriptions/with-callbacks-subscription';
 
+/**
+ * Schedules an [[Action]] asynchronously and executes thereafter.
+ * @param action
+ * @category Schedulers
+ */
 export const PromiseScheduler: Scheduler = (action: Action) => {
   const subscription = new BooleanSubscription();
 
@@ -43,6 +48,11 @@ export const PromiseScheduler: Scheduler = (action: Action) => {
   return new Computation<unknown>(promise, subscription);
 };
 
+/**
+ * Schedules an [[Action]] asynchronously and executes after a given time delay.
+ * @param action
+ * @category Schedulers
+ */
 export const PromisedTimedScheduler: TimedScheduler = (action: Action, time: number) => {
   const subscription = new WithCallbacksSubscription();
 

@@ -27,6 +27,10 @@
  */
 import Subscription from '../../subscription';
 
+/**
+ * A basic [[Subscription]] which represents a boolean state.
+ * @category Subscriptions
+ */
 export default class BooleanSubscription implements Subscription {
   protected state: boolean = false;
 

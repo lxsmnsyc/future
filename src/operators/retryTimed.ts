@@ -28,20 +28,23 @@
 import Future from '../future';
 import { FutureTransformer } from '../transformer';
 import Computation from '../computation';
+import { TimedScheduler } from '../scheduler';
+import Schedulers from '../schedulers';
 import { Predicate } from '../utils/types/function';
-import WithCallbacksSubscription from '../utils/subscriptions/with-callbacks-subscription';
+import CompositeSubscription from '../utils/subscriptions/composite-subscription';
 
 class FutureRetryTimed<T> extends Future<T> {
   constructor(
     private future: Future<T>,
     private time: number,
+    private scheduler: TimedScheduler,
     private until?: Predicate<Error>,
   ) {
     super();
   }
 
   get(): Computation<T> {
-    const subscription = new WithCallbacksSubscription();
+    const subscription = new CompositeSubscription();
 
     const promise = new Promise<T>((resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
@@ -49,26 +52,23 @@ class FutureRetryTimed<T> extends Future<T> {
 
       let expired = false;
 
-      const timeout = setTimeout(() => {
+      const timeout = this.scheduler(() => {
         expired = true;        
       }, this.time);
 
-      subscription.addListener(() => {
-        clearTimeout(timeout);
-      });
+      subscription.add(timeout);
 
       const retry = () => {
         const computation = this.future.get();
 
-        const listener = () => computation.cancel();
-        subscription.addListener(listener);
+        subscription.add(computation);
 
         computation.then(res, error => {
           if (expired || (this.until && this.until(error))) {
             rej(error);
             subscription.cancel();
           } else {
-            subscription.removeListener(listener);
+            subscription.remove(computation);
             computation.cancel();
             retry();
           }
@@ -82,6 +82,19 @@ class FutureRetryTimed<T> extends Future<T> {
   }
 }
 
-export default function retryTimed<T>(time: number, until?: Predicate<Error>): FutureTransformer<T, T> {
-  return (future: Future<T>): Future<T> => new FutureRetryTimed<T>(future, time, until);
+/**
+ * Retries a rejected [[Computation]] until a certain amount of time or, if provided,
+ * the given predicate returns true, rejecting with the recent error.
+ * 
+ * ```typescript
+ * proneToErrorFuture.compose(Future.retryTimed(500));
+ * ```
+ * @category Transformers
+ * @param time The amount of time
+ * @param scheduler Where to schedule the timeout
+ * @param until a predicate which receives the current rejected error.
+ * @typeparam T type of the computed value
+ */
+export default function retryTimed<T>(time: number, scheduler: TimedScheduler = Schedulers.SYNC.TIMED, until?: Predicate<Error>): FutureTransformer<T, T> {
+  return (future: Future<T>): Future<T> => new FutureRetryTimed<T>(future, time, scheduler, until);
 }

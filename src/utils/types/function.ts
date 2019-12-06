@@ -25,14 +25,39 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2019
  */
+
+/**
+ * @category Utility
+ */
 export type Action = () => void;
+/**
+ * @category Utility
+ */
 export type Supplier<T> = () => T;
 
+/**
+ * @category Utility
+ */
 export type Function<T, R> = (value: T) => R;
+/**
+ * @category Utility
+ */
 export type Function2<T1, T2, R> = (v1: T1, v2: T2) => R;
 
+/**
+ * @category Utility
+ */
 export type Predicate<T> = Function<T, boolean>;
+/**
+ * @category Utility
+ */
 export type Predicate2<T1, T2> = Function2<T1, T2, boolean>;
 
+/**
+ * @category Utility
+ */
 export type Consumer<T> = Function<T, void>;
+/**
+ * @category Utility
+ */
 export type Consumer2<T1, T2> = Function2<T1, T2, void>;

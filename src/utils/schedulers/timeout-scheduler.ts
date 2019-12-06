@@ -30,6 +30,11 @@ import { Scheduler, TimedScheduler } from '../../scheduler';
 import { Action } from '../types/function';
 import WithCallbacksSubscription from '../subscriptions/with-callbacks-subscription';
 
+/**
+ * Schedules an [[Action]] using `setTimeout` and executes thereafter.
+ * @param action
+ * @category Schedulers
+ */
 export const TimeoutScheduler: Scheduler = (action: Action) => {
   const subscription = new WithCallbacksSubscription();
 
@@ -51,6 +56,11 @@ export const TimeoutScheduler: Scheduler = (action: Action) => {
   return new Computation<unknown>(promise, subscription);
 };
 
+/**
+ * Schedules an [[Action]] with `setTimeout` and executes after a given time delay.
+ * @param action
+ * @category Schedulers
+ */
 export const TimeoutTimedScheduler: TimedScheduler = (action: Action, time: number) => {
   const subscription = new WithCallbacksSubscription();
 

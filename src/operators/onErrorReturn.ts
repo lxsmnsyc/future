@@ -70,6 +70,21 @@ class FutureOnErrorReturn<T> extends Future<T> {
   }
 }
 
+/**
+ * Resolves a rejected [[Computation]] with the returned value
+ * from a given function.
+ * 
+ * ```typescript
+ * Future.failure(new Error('Bad'))
+ *  .compose(Future.onErrorReturn(() => 'Hello World'))
+ *  .get()
+ *  .then(console.log);
+ * ```
+ * 
+ * @category Transformers
+ * @param resume a function which accepts the rejected Error
+ * @typeparam T type of the computed value and resumed function result
+ */
 export default function onErrorReturn<T>(resume: Function<Error, T>): FutureTransformer<T, T> {
-  return (future: Future<T>): Future<T> => new FutureOnErrorReturn(future, resume);
+  return (future: Future<T>): Future<T> => new FutureOnErrorReturn<T>(future, resume);
 }

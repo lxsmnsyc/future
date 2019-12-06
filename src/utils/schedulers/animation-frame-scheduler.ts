@@ -30,6 +30,11 @@ import { Scheduler, TimedScheduler } from '../../scheduler';
 import { Action } from '../types/function';
 import WithCallbacksSubscription from '../subscriptions/with-callbacks-subscription';
 
+/**
+ * Schedules an [[Action]] using `requestAnimationFrame` and executes thereafter.
+ * @param action
+ * @category Schedulers
+ */
 export const AnimationFrameScheduler: Scheduler = (action: Action) => {
   const subscription = new WithCallbacksSubscription();
 
@@ -51,6 +56,11 @@ export const AnimationFrameScheduler: Scheduler = (action: Action) => {
   return new Computation<unknown>(promise, subscription);
 };
 
+/**
+ * Schedules an [[Action]] with `requestAnimationFrame` and executes after a given time delay.
+ * @param action
+ * @category Schedulers
+ */
 export const AnimationFrameTimedScheduler: TimedScheduler = (action: Action, time: number) => {
   const subscription = new WithCallbacksSubscription();
 

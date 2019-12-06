@@ -27,6 +27,10 @@
  */
 import Subscription from '../../subscription';
 
+/**
+ * A [[Subscription]] that does nothing.
+ * @category Subscriptions
+ */
 export default class EmptySubscription implements Subscription {
   cancel() {
     // empty ¯\_(ツ)_/¯

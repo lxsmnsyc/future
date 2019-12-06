@@ -26,10 +26,10 @@
  * @copyright Alexis Munsayac 2019
  */
 import Future from '../future';
-import { Consumer } from '../utils/types/function';
 import Computation from '../computation';
-import { WithUpstreamSubscription } from '../utils/subscriptions/with-upstream-subscription';
 import { FutureTransformer } from '../transformer';
+import { Consumer } from '../utils/types/function';
+import WithUpstreamSubscription from '../utils/subscriptions/with-upstream-subscription';
 
 class FutureDoOnSuccess<T> extends Future<T> {
   constructor(
@@ -72,6 +72,12 @@ class FutureDoOnSuccess<T> extends Future<T> {
   }
 }
 
+/**
+ * Registers a [[Consumer]] that receives the computed value.
+ * @category Transformers
+ * @param onSuccess 
+ * @typeparam T type of the computed value and the value to be received by the given consumer.
+ */
 export default function doOnSuccess<T>(onSuccess: Consumer<T>): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureDoOnSuccess(future, onSuccess);
 }

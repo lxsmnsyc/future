@@ -28,6 +28,10 @@
 import Subscription from '../../subscription';
 import BooleanSubscription from './boolean-subscription';
 
+/**
+ * A [[Subscription]] that allows collection of multiple [[Subscription]] instances.
+ * @category Subscriptions
+ */
 export default class CompositeSubscription extends BooleanSubscription {
   private listeners: Set<Subscription> = new Set<Subscription>();
 

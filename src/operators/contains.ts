@@ -29,7 +29,7 @@ import Future from '../future';
 import { FutureTransformer } from '../transformer';
 import { Predicate2 } from '../utils/types/function';
 import Computation from '../computation';
-import { WithUpstreamSubscription } from '../utils/subscriptions/with-upstream-subscription';
+import WithUpstreamSubscription from '../utils/subscriptions/with-upstream-subscription';
 
 class FutureContains<A, B> extends Future<boolean> {
   constructor(private upstream: Future<A>, private value: B, private comparer: Predicate2<A, B>) {
@@ -79,8 +79,12 @@ const COMPARER = <A, B>(a: A, b: B) => Object.is(a, b);
  * Compares the resolved value with the given value and comparer and resolves with the comparer result.
  * 
  * Default comparer is the Object.is function.
+ * 
+ * @category Transformers
  * @param value the value to be compared with the resolved value.
  * @param comparer a function that compares two values.
+ * @typeparam A type of the computed value
+ * @typeparam B type of the value to be compared with.
  */
 export default function contains<A, B>(value: B, comparer: Predicate2<A, B> = COMPARER): FutureTransformer<A, boolean> {
   return (future: Future<A>): Future<boolean> => new FutureContains<A, B>(future, value, comparer);

@@ -28,4 +28,15 @@
 import Future from './future';
 import { Function } from './utils/types/function';
 
+/**
+ * A type annotation for a function that transforms a [[Future]] instance
+ * into another [[Future]] instance.
+ * 
+ * Used for [[Future.compose]] and [[Future.pipe]].
+ * 
+ * @typeparam T type for the computed value of the given [[Future]].
+ * @typeparam R type for the computed value of the resulting [[Future]].
+ * 
+ * @category Core
+ */
 export type FutureTransformer<T, R> = Function<Future<T>, Future<R>>;

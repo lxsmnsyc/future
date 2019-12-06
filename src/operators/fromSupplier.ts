@@ -53,6 +53,19 @@ class FutureFromSupplier<T> extends Future<T> {
   }
 }
 
+/**
+ * Runs the given supplier function and resolves with the returned value.
+ * 
+ * ```typescript
+ * Future.fromSupplier(() => 'Hello World')
+ *  .get()
+ *  .then(console.log); // Hello World
+ * ```
+ * 
+ * @category Constructors
+ * @param supplier 
+ * @typeparam T type of the value to be returned.
+ */
 export default function fromSupplier<T>(supplier: Supplier<T>): Future<T> {
   return new FutureFromSupplier<T>(supplier);
 }

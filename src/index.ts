@@ -39,8 +39,10 @@ export { default as Schedulers } from './schedulers';
 /**
  * Constructors
  */
+
 export { default as amb } from './operators/amb';
 export { default as create } from './operators/create';
+export { default as concat } from './operators/concat';
 export { default as defer } from './operators/defer';
 export { default as failure } from './operators/failure';
 export { default as fromAction } from './operators/fromAction';
@@ -64,6 +66,7 @@ export { default as cache } from './operators/cache';
 export { default as contains } from './operators/contains';
 export { default as computeOn } from './operators/computeOn';
 export { default as delay } from './operators/delay';
+export { default as defaultIfEmpty } from './operators/defaultIfEmpty';
 export { default as doFinally } from './operators/doFinally';
 export { default as doOnCancel } from './operators/doOnCancel';
 export { default as doOnEvent } from './operators/doOnEvent';
@@ -84,5 +87,21 @@ export { default as retry } from './operators/retry';
 export { default as retryCounted } from './operators/retryCounted';
 export { default as retryTimed } from './operators/retryTimed';
 export { default as retryUntil } from './operators/retryUntil';
+export { default as subscribeOn } from './operators/subscribeOn';
+export { default as switchIfEmpty } from './operators/switchIfEmpty';
 export { default as timeout } from './operators/timeout';
 export { default as zipWith } from './operators/zipWith';
+
+/**
+ * Subscriptions
+ */
+export { default as BooleanSubscription } from './utils/subscriptions/boolean-subscription';
+export { default as CompositeSubscription } from './utils/subscriptions/composite-subscription';
+export { default as EmptySubscription } from './utils/subscriptions/empty-subscription';
+export { default as WithCallbacksSubscription } from './utils/subscriptions/with-callbacks-subscription';
+export { default as WithUpstreamSubscription } from './utils/subscriptions/with-upstream-subscription';
+
+/**
+ * Errors
+ */
+export { default as TimeoutError } from './utils/errors/timeout-error';

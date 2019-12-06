@@ -28,7 +28,7 @@
 import Future from '../future';
 import { FutureTransformer } from '../transformer';
 import Computation from '../computation';
-import { WithUpstreamSubscription } from '../utils/subscriptions/with-upstream-subscription';
+import WithUpstreamSubscription from '../utils/subscriptions/with-upstream-subscription';
 
 class FutureDefaultIfEmpty<T> extends Future<T> {
   constructor(
@@ -63,6 +63,21 @@ class FutureDefaultIfEmpty<T> extends Future<T> {
   }
 }
 
+/**
+ * Resolves the [[Computation]] instance with the given value if
+ * the [[Computation]] resolves with a null/undefined value.
+ * 
+ * ```typescript
+ * Future.success()
+ *  .compose(Future.defaultIfEmpty('Hello'))
+ *  .get()
+ *  .then(console.log); // Hello
+ * ```
+ * 
+ * @category Transformers
+ * @param item a value to be resolved with
+ * @typeparam T type of computed and given value
+ */
 export default function defaultIfEmpty<T>(item: T): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureDefaultIfEmpty(future, item);
 }

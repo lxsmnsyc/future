@@ -69,6 +69,20 @@ class FutureComputeOn<T> extends Future<T> {
   }
 }
 
+/**
+ * Schedules the [[Computation]] instance on the given scheduler function.
+ * 
+ * ```typescript
+ * Future.success('Hello')
+ *  .compose(Future.computeOn(Future.Schedulers.TIMEOUT.NOW))
+ *  .get();
+ *  .then(console.log);
+ * ```
+ * 
+ * @category Transformers
+ * @param scheduler where to perform the computation
+ * @typeparam T type of the computed value
+ */
 export default function computeOn<T>(scheduler: Scheduler): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureComputeOn<T>(future, scheduler);
 }

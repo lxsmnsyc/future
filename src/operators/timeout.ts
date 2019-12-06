@@ -54,14 +54,17 @@ class FutureTimeout<T> extends Future<T> {
       subscription.add(computation);
 
       const schedule = this.scheduler(() => {
-        rej(new TimeoutError());
+        rej(new TimeoutError(this.time));
         subscription.cancel();
       }, this.time);
 
       subscription.add(schedule);
 
       computation.then(
-        res,
+        (value) => {
+          res(value);
+          schedule.cancel();
+        },
         err => {
           rej(err);
           subscription.cancel();
@@ -73,6 +76,26 @@ class FutureTimeout<T> extends Future<T> {
   }
 }
 
+/**
+ * Rejects with [[TimeoutError]] when this [[Future]]
+ * fails to resolve within a certain amount of time.
+ * 
+ * ```typescript
+ * // A Future that resolves after 500ms
+ * const delayedHello = Future.timer('Hello', 500);
+ * 
+ * // Compose a new Future which only allows resolution within 400ms
+ * const strict = delayedHello.compose(Future.timeout(400));
+ * 
+ * // Begin the computation and expect an error
+ * strict.get()
+ *  .catch(console.log);
+ * ```
+ * 
+ * @category Transformers
+ * @param time the amount of time
+ * @param scheduler where to schedule the timeout
+ */
 export default function timeout<T>(time: number, scheduler: TimedScheduler = Schedulers.SYNC.TIMED): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureTimeout<T>(future, time, scheduler);
 }

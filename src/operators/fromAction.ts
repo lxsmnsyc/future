@@ -51,6 +51,20 @@ class FutureFromSupplier extends Future<unknown> {
   }
 }
 
+/**
+ * Runs the given action function and resolves with an empty value after it finishes.
+ * 
+ * ```typescript
+ * Future.fromAction(() => {
+ *  // do stuff
+ * })
+ *  .get()
+ *  .then(console.log); // undefined
+ * ```
+ * 
+ * @category Constructors
+ * @param action 
+ */
 export default function fromAction(action: Action): Future<unknown> {
   return new FutureFromSupplier(action);
 }

@@ -29,6 +29,9 @@ import Future from '../future';
 import Computation from '../computation';
 import CompositeSubscription from '../utils/subscriptions/composite-subscription';
 
+/**
+ * @ignore
+ */
 class FutureAmb<T extends Future<any>[]> extends Future<any> {
   constructor(private futures: T) {
     super();
@@ -69,6 +72,23 @@ class FutureAmb<T extends Future<any>[]> extends Future<any> {
   }
 }
 
+/**
+ * Resolves the [[Computation]] instance to the fastest given [[Future]]. 
+ * 
+ * Example below resolves the `amb` instance to B as it its faster than A.
+ *
+ * ```typescript
+ * const A = Future.timer('Hello', 500);
+ * const B = Future.timer('World', 400);
+ * 
+ * Future.amb([A, B])
+ *  .get()
+ *  .then(console.log); // World
+ * ```
+ * @category Constructors
+ * @typeparam T annotation for the Array of [[Future]]s
+ * @param futures an Array of [[Future]] instances
+ */
 export default function amb<T extends Future<any>[]>(futures: T): Future<any> {
   return new FutureAmb<T>(futures);
 }

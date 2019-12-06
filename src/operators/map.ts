@@ -29,7 +29,7 @@ import Future from '../future';
 import { FutureTransformer } from '../transformer';
 import Computation from '../computation';
 import { Function } from '../utils/types/function';
-import { WithUpstreamSubscription } from '../utils/subscriptions/with-upstream-subscription';
+import WithUpstreamSubscription from '../utils/subscriptions/with-upstream-subscription';
 
 
 class FutureMap<T, R> extends Future<R> {
@@ -76,8 +76,19 @@ class FutureMap<T, R> extends Future<R> {
 }
 
 /**
- * Transforms the resolved value of the given Future.
+ * Transforms the resolved value of the given [[Future]].
+ * 
+ * ```typescript
+ * const A = Future.timer('Hello', 500);
+ * 
+ * const greeting = A.compose(Future.map(value => `${value} World`));
+ * 
+ * greeting.get().then(console.log); // Hello World
+ * ```
+ * @category Transformers
  * @param mapper a function that transforms the resolved value
+ * @typeparam T type of the received computed value
+ * @typeparam R type of the resulting computed value from the transformer function
  */
 export default function map<T, R>(mapper: Function<T, R>): FutureTransformer<T, R> {
   return (future: Future<T>): Future<R> => new FutureMap<T, R>(future, mapper);

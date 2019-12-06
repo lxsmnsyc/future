@@ -90,6 +90,23 @@ class FutureMergeWith extends Future<unknown> {
   }
 }
 
+/**
+ * Runs the given [[Future]] and this [[Future]]'s [[Computation]] instances
+ * at the same time, resolving after both [[Computation]] has resolved, ignoring
+ * their values.
+ * 
+ * ```typescript
+ * const A = Future.timer('Hello', 500);
+ * const B = Future.timer('World', 400);
+ * 
+ * A.compose(Future.mergeWith(B))
+ *  .get()
+ *  .then(console.log); // Resolves with an empty value after 500ms
+ * ```
+ * 
+ * @category Transformers
+ * @param other A [[Future]] instance
+ */
 export default function mergeWith(other: Future<any>): FutureTransformer<any, unknown> {
   return (future: Future<any>): Future<unknown> => new FutureMergeWith(future, other);
 }

@@ -78,6 +78,24 @@ class FutureAndThen<T> extends Future<T> {
   }
 }
 
+/**
+ * Computes and ignores the composed [[Future]] instance and
+ * then resolves to the given [[Future]] instance after the computation.
+ * 
+ * Example below resolves the `amb` instance to B as it its faster than A.
+ *
+ * ```typescript
+ * const A = Future.timer('Hello', 500);
+ * const B = Future.timer('World', 400);
+ * 
+ * A.compose(Future.andThen(B))
+ *  .get()
+ *  .then(console.log); // World after 900s
+ * ```
+ * @category Transformers
+ * @typeparam T computed value for the given [[Future]] instance
+ * @param futures an Array of [[Future]] instances
+ */
 export default function andThen<T>(other: Future<T>): FutureTransformer<any, T> {
   return (future: Future<any>): Future<T> => new FutureAndThen<T>(future, other);
 }

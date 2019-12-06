@@ -39,6 +39,14 @@ class FutureNever extends Future<never> {
   }
 }
 
+/**
+ * Returns a [[Computation]] that never rejects nor resolves.
+ * 
+ * ```typescript
+ * const never = Future.never();
+ * ```
+ * @category Constructors
+ */
 export default function never(): Future<never> {
   return new FutureNever();
 }

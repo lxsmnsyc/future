@@ -28,7 +28,7 @@
 import Future from '../future';
 import { Consumer } from '../utils/types/function';
 import Computation from '../computation';
-import { WithUpstreamSubscription } from '../utils/subscriptions/with-upstream-subscription';
+import WithUpstreamSubscription from '../utils/subscriptions/with-upstream-subscription';
 import { FutureTransformer } from '../transformer';
 
 class FutureDoOnFailure<T> extends Future<T> {
@@ -71,6 +71,12 @@ class FutureDoOnFailure<T> extends Future<T> {
   }
 }
 
+/**
+ * Registers a [[Consumer]] that receives the rejected value.
+ * @category Transformers
+ * @param onFailure 
+ * @typeparam T type of the computed value.
+ */
 export default function doOnFailure<T>(onFailure: Consumer<Error>): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureDoOnFailure<T>(future, onFailure);
 }

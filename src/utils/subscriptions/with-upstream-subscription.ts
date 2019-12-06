@@ -28,7 +28,11 @@
 import Subscription from '../../subscription';
 import BooleanSubscription from './boolean-subscription';
 
-export class WithUpstreamSubscription extends BooleanSubscription {
+/**
+ * A wrapper [[Subscription]] to an upstream instance of [[Subscription]].
+ * @category Subscriptions
+ */
+export default class WithUpstreamSubscription extends BooleanSubscription {
   constructor(private upstream: Subscription) {
     super();
   }

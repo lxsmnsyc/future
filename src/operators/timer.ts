@@ -58,6 +58,23 @@ class FutureTimer<T> extends Future<T> {
   }
 }
 
+/**
+ * Resolves a given value after a certain amount of time.
+ * 
+ * ```typescript
+ * // a Future that resolves 'Hello' after 500ms
+ * const delayedHello = Future.timer('Hello', 500);
+ * 
+ * delayedHello.get()
+ *  .then(console.log);
+ * ```
+ * 
+ * @category Constructors
+ * @param value the value to be resolved into
+ * @param time the amount of delay in milliseconds
+ * @param scheduler the function to schedule the timeout
+ * @typeparam T the type of the computed value
+ */
 export default function timer<T>(value: T, time: number, scheduler: TimedScheduler = Schedulers.SYNC.TIMED): Future<T> {
   return new FutureTimer<T>(value, time, scheduler);
 }

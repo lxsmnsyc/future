@@ -30,6 +30,9 @@ import { FutureTransformer } from '../transformer';
 import CompositeSubscription from '../utils/subscriptions/composite-subscription';
 import Computation from '../computation';
 
+/**
+ * @ignore
+ */
 class FutureAmbWith<T> extends Future<T> {
   constructor(private future: Future<T>, private other: Future<T>) {
     super();
@@ -85,8 +88,21 @@ class FutureAmbWith<T> extends Future<T> {
 }
 
 /**
- * Transforms the resolved value of the given Future.
- * @param mapper a function that transforms the resolved value
+ * Resolves the [[Computation]] instance to the fastest given [[Future]]. 
+ * 
+ * Example below resolves the `ambWith` instance to B as it its faster than A.
+ *
+ * ```typescript
+ * const A = Future.timer('Hello', 500);
+ * const B = Future.timer('World', 400);
+ * 
+ * A.compose(Future.ambWith(B))
+ *  .get()
+ *  .then(console.log); // World
+ * ```
+ * @category Transformers
+ * @typeparam T Type of the computed value
+ * @param other a [[Future]] instance to race with.
  */
 export default function ambWith<T>(other: Future<T>): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureAmbWith<T>(future, other);

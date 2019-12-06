@@ -25,9 +25,36 @@
  * @author Alexis Munsayac <alexis.munsayac@gmail.com>
  * @copyright Alexis Munsayac 2019
  */
+
+/**
+ * An emitter that allows push-based resolution.
+ * @typeparam T type of the value to be resolved by the [[Future]].
+ * @category Core
+ */
 export default interface FutureEmitter<T> {
+  /**
+   * Resolves the [[Computation]] instance with the given value.
+   * @param value The value to be resolved into.
+   */
   success: (value: T) => void,
+
+  /**
+   * Rejects the [[Computation]] instance with the given value.
+   * @param error The error to be rejected into.
+   */
   failure: (error: Error) => void,
+
+  /**
+   * Registers a callback to be executed when
+   * the [[Computation]] instance gets cancelled
+   * downstream.
+   * @param callback A callback function.
+   */
   onCancel: (callback: () => void) => void,
+
+  /**
+   * Checks if the [[Computation]] instance is cancelled.
+   * @returns The state of cancellation
+   */
   isCancelled: () => boolean,
 }

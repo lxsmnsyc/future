@@ -82,6 +82,14 @@ class FutureDelay<T> extends Future<T> {
   }
 }
 
+/**
+ * Delays the [[Computation]] instance's value by a certain amount of time.
+ * @category Transformers
+ * @param time the amount of time to delay
+ * @param scheduler where to schedule the time delay
+ * @param immediateRejection immediately reject an error
+ * @typeparam T type of the computed value
+ */
 export default function delay<T>(time: number, scheduler: TimedScheduler = Schedulers.SYNC.TIMED, immediateRejection: boolean = false): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureDelay<T>(future, time, scheduler, immediateRejection);
 }

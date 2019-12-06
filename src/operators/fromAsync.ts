@@ -84,6 +84,42 @@ class FutureFromAsync<T> extends Future<T> {
   }
 }
 
+/**
+ * Runs an async function, resolving with the returned Promise's resolved value.
+ * 
+ * When the function is called, it receives two values:
+ * - onCancel: a function that allows you to register an [[Action]] that is
+ * called when a [[Computation]] instance is cancelled.
+ * - protect: a function that wraps a Promise into a new Promise that prevents
+ * it from resolving if the [[Computation]] instance is cancelled.
+ * 
+ * ```typescript
+ * const delayedHelloWorld = Future.fromAsync(async (onCancel, protect) => {
+ *   // Construct a delayed promise
+ *   const delayed = new Promise((resolve, reject) => {
+ *     // create the timeout
+ *     const timeout = setTimeout(() => {
+ *       resolve('Hello');
+ *     }, 500);
+ * 
+ *     // register cancellation
+ *     onCancel(() => {
+ *       clearTimeout(timeout);
+ *     });
+ *   });
+ * 
+ *   // get the value
+ *   const value = await protect(delayed); // do not resolve if cancelled.
+ * 
+ *   // return the value
+ *   return `${value} World`;
+ * });
+ * 
+ * ```
+ * @category Constructors
+ * @param fn 
+ * @typeparam T type of the value to be returned.
+ */
 export default function fromAsync<T>(fn: AsyncFunction<T>): Future<T> {
   return new FutureFromAsync<T>(fn);
 }

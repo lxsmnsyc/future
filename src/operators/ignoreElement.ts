@@ -27,7 +27,8 @@
  */
 import Future from '../future';
 import Computation from '../computation';
-import { WithUpstreamSubscription } from '../utils/subscriptions/with-upstream-subscription';
+import WithUpstreamSubscription from '../utils/subscriptions/with-upstream-subscription';
+import { FutureTransformer } from '../transformer';
 
 
 class FutureIgnoreElement extends Future<unknown> {
@@ -62,9 +63,17 @@ class FutureIgnoreElement extends Future<unknown> {
 }
 
 /**
- * Transforms the resolved value of the given Future.
- * @param mapper a function that transforms the resolved value
+ * Ignores the resolved value by resolving with an empty value.
+ * 
+ * ```typescript
+ * Future.timer('Hello', 500)
+ *  .compose(Future.ignoreElement())
+ *  .get()
+ *  .then(console.log) // undefined
+ * ```
+ * 
+ * @category Transformers
  */
-export default function ignoreElement(future: Future<any>) {
-  return new FutureIgnoreElement(future);
+export default function ignoreElement(): FutureTransformer<any, unknown> {
+  return (future: Future<any>): Future<unknown> => new FutureIgnoreElement(future);
 }

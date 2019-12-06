@@ -70,6 +70,17 @@ class FutureRetryUntil<T> extends Future<T> {
   }
 }
 
+/**
+ * Retries a rejected [[Computation]] until the given [[Predicate]] returns true, rejecting
+ * with the recent error.
+ *
+ * ```typescript
+ * proneToErrorFuture.compose(Future.retryUntil(processError));
+ * ```
+ * @category Transformers
+ * @param until a predicate which receives the current rejected error.
+ * @typeparam T type of the computed value
+ */
 export default function retryUntil<T>(until: Predicate<Error>): FutureTransformer<T, T> {
   return (future: Future<T>): Future<T> => new FutureRetryUntil<T>(future, until);
 }

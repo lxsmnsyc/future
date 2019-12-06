@@ -77,8 +77,30 @@ class FutureCreate<T> extends Future<T> {
 }
 
 /**
- * Creates a Future
- * @param callback a function that receives a FutureEmitter
+ * Creates a [[Future]] with a given callback.
+ * 
+ * The callback receives a [[FutureEmitter]] instance which
+ * you can use to resolve/reject values as well as attach
+ * cleanup logic when a [[Computation]] gets cancelled.
+ * 
+ * ```typescript
+ * // Create a Future that resolves 'Hello' after 500ms
+ * const delayedHello = Future.create((emitter) => {
+ * 
+ *   // Our timeout that resolves the value
+ *   const timeout = setTimeout(() => {
+ *     emitter.success('Hello') 
+ *   }, 500);
+ * 
+ *   // Attach cleanup
+ *   emitter.onCancel(() => {
+ *     clearTimeout(timeout);
+ *   });
+ * });
+ * ```
+ * @category Constructors
+ * @param callback a function that receives a [[FutureEmitter]]
+ * @typeparam T type of the computed value
  */
 export default function create<T>(callback: Consumer<FutureEmitter<T>>): Future<T> {
   return new FutureCreate(callback);
