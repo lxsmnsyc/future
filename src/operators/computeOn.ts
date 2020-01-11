@@ -44,22 +44,16 @@ class FutureComputeOn<T> extends Future<T> {
 
     const promise = new Promise<T>((resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
       const schedule = this.scheduler(() => {
         const computation = this.future.get();
 
         subscription.add(computation);
 
-        computation.then(
-          value => {
-            res(value);
-          },
-          err => {
-            rej(err);
-            subscription.cancel();
-          }
-        );
+        computation.then(res, err => {
+          reject(err);
+          subscription.cancel();
+        });
       });
 
       subscription.add(schedule);

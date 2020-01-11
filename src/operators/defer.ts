@@ -41,14 +41,13 @@ class FutureDefer<T> extends Future<T> {
 
     const promise = new Promise<T>((resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
       let result;
 
       try {
         result = this.supplier();
       } catch (err) {
-        rej(err);
+        reject(err);
         subscription.cancel();
         return;
       }
@@ -58,7 +57,7 @@ class FutureDefer<T> extends Future<T> {
       subscription.add(computation);
 
       computation.then(res, err => {
-        rej(err);
+        reject(err);
         subscription.cancel();
       });
 

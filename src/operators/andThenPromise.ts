@@ -41,33 +41,21 @@ class FutureAndThenPromise<T> extends Future<T> {
   get(): Computation<T> {
     const subscription = new CompositeSubscription();
 
-    const promise = new Promise<T>((resolve, reject) => {
+    const promise = new Promise<T>(async (resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
       const computationA = this.future.get();
 
       subscription.add(computationA);
 
-      computationA.then(
-        _ => {
-          subscription.remove(computationA);
-
-          this.other.then(
-            value => {
-              res(value);
-            },
-            err => {
-              rej(err);
-              subscription.cancel();
-            },
-          );
-        },
-        err => {
-          rej(err);
-          subscription.cancel();
-        },
-      );
+      try {
+        await computationA;
+        subscription.remove(computationA);
+        res(await this.other);
+      } catch (err) {
+        reject(err);
+        subscription.cancel();
+      }
     });
 
     return new Computation<T>(promise, subscription);

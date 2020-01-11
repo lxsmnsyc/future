@@ -1,4 +1,4 @@
-import { fromPromise } from '../src';
+import { fromPromise } from '../../src';
 
 describe('fromPromise', () => {
   it('should resolve with the same resolved value', () => {

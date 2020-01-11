@@ -14,7 +14,8 @@
     "start": "tsdx watch",
     "build": "tsdx build",
     "test": "tsdx test",
-    "lint": "tsdx lint"
+    "lint": "tsdx lint",
+    "coverage": "yarn test --coverage"
   },
   "peerDependencies": {},
   "devDependencies": {
@@ -30,5 +31,9 @@
   },
   "description": "Extension to the ES6 Promise",
   "repository": "https://github.com/LXSMNSYC/future.git",
+  "homepage": "https://lxsmnsyc.github.io/future",
+  "bugs": {
+    "url": "https://github.com/LXSMNSYC/future/issues"
+  },
   "private": false
 }

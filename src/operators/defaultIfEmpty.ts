@@ -43,20 +43,20 @@ class FutureDefaultIfEmpty<T> extends Future<T> {
 
     const subscription = new WithUpstreamSubscription(computation);
 
-    const promise = new Promise<T>((resolve, reject) => {
+    const promise = new Promise<T>(async (resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
-      computation.then(value => {
+      try {
+        const value = await computation;
         if (value == null) {
           res(this.item);
         } else {
           res(value);
         }
-      }, (err) => {
-        rej(err);
+      } catch (err) {
+        reject(err);
         subscription.cancel();
-      });
+      }
     });
 
     return new Computation<T>(promise, subscription);

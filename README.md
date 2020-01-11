@@ -97,6 +97,40 @@ const greeting = Future.success('Hello')
 greeting.get().then(console.log); // Hello World
 ```
 
+### Working with async functions
+
+Since Future's Computations are Promise-like in implementation, you can always use the `await` functionality.
+
+```typescript
+const value = await Future.timer('Hello', 500).get();
+```
+
+However, if a Computation is programmatically cancelled while await, the function will halt due to the Computation not resolving.
+
+```typescript
+// Construct a delayed 'Hello' and get the computation
+const computation = Future.timer('Hello', 500).get();
+
+// An example of a function that can halt when the computation is cancelled.
+const sampleRun = async () => {
+  console.log('awaiting for computation');
+  const value = await computation; // Try to wait for the resolved value
+  // After 200ms, the computation cancels, and thus this
+  // and the next lines are never executed.
+  console.log(value); 
+};
+
+// run the async function
+sampleRun();
+
+// Cancel mid computation
+setTimeout(() => {
+  computation.cancel();
+}, 200);
+```
+
+This is great specially if you we don't want to schedule microtasks that we never needed.
+
 ### Computation vs Future
 
 There are two core classes in this library: Futures and Computation.

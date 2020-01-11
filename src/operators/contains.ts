@@ -41,32 +41,15 @@ class FutureContains<A, B> extends Future<boolean> {
 
     const subscription = new WithUpstreamSubscription(computation);
 
-    const promise = new Promise<boolean>((resolve, reject) => {
+    const promise = new Promise<boolean>(async (resolve, reject) => {
       const res = (value: boolean) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
-      computation.then(
-        value => {
-          if (subscription.cancelled) {
-            return;
-          }
-
-          let result;
-          try {
-            result = this.comparer(value, this.value);
-          } catch (err) {
-            rej(err);
-            subscription.cancel();
-            return;
-          }
-
-          res(result);
-        },
-        (err) => {
-          rej(err);
-          subscription.cancel();
-        },
-      );
+      try {
+        res(this.comparer(await computation, this.value));
+      } catch (err) {
+        reject(err);
+        subscription.cancel();
+      }
     });
 
     return new Computation<boolean>(promise, subscription);

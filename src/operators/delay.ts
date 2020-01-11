@@ -38,7 +38,6 @@ class FutureDelay<T> extends Future<T> {
     private future: Future<T>,
     private time: number,
     private scheduler: TimedScheduler,
-    private immediateRejection: boolean,
   ) {
     super();
   }
@@ -48,7 +47,6 @@ class FutureDelay<T> extends Future<T> {
 
     const promise = new Promise<T>((resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
       const computation = this.future.get();
   
@@ -63,17 +61,8 @@ class FutureDelay<T> extends Future<T> {
           subscription.add(schedule);
         },
         error => {
-          if (this.immediateRejection) {
-            rej(error);
-            subscription.cancel();
-          } else {
-            const schedule = this.scheduler(() => {
-              rej(error);
-              subscription.cancel();
-            }, this.time);
-            
-            subscription.add(schedule);
-          }
+          reject(error);
+          subscription.cancel();
         },
       ); 
     });
@@ -83,13 +72,12 @@ class FutureDelay<T> extends Future<T> {
 }
 
 /**
- * Delays the [[Computation]] instance's value by a certain amount of time.
+ * Delays the [[Computation]] instance's computed value by a certain amount of time.
  * @category Transformers
  * @param time the amount of time to delay
  * @param scheduler where to schedule the time delay
- * @param immediateRejection immediately reject an error
  * @typeparam T type of the computed value
  */
-export default function delay<T>(time: number, scheduler: TimedScheduler = Schedulers.SYNC.TIMED, immediateRejection: boolean = false): FutureTransformer<T, T> {
-  return (future: Future<T>): Future<T> => new FutureDelay<T>(future, time, scheduler, immediateRejection);
+export default function delay<T>(time: number, scheduler: TimedScheduler = Schedulers.SYNC.TIMED): FutureTransformer<T, T> {
+  return (future: Future<T>): Future<T> => new FutureDelay<T>(future, time, scheduler);
 }

@@ -21,15 +21,13 @@ export default class Computation<T> implements Subscription, PromiseLike<T> {
       result.then(
         value => {
           if (!this.done && !this.cancelled) {
-            this.done = true;
             resolve(value);
+            this.done = true;
           }
         },
         error => {
-          if (!this.cancelled) {
-            this.cancel();
-          }
           reject(error);
+          this.cancel();
         },
       )
     });
@@ -39,7 +37,7 @@ export default class Computation<T> implements Subscription, PromiseLike<T> {
    * Cancels the computation.
    */
   public cancel() {
-    if (!this.done) {
+    if (!this.done && !this.cancelled) {
       this.cancelled = true;
       this.subscription.cancel();
     }

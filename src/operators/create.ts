@@ -39,23 +39,21 @@ class FutureCreateEmitter<T> implements FutureEmitter<T> {
     private subscription: WithCallbacksSubscription
   ) {}
 
-  success(value: T) {
+  public success(value: T) {
     if (!this.subscription.cancelled) {
       this.resolve(value);
     }
   }
 
-  failure(error: Error) {
-    if (!this.subscription.cancelled) {
-      this.reject(error);
-    }
+  public failure(error: Error) {
+    this.reject(error);
   }
 
-  onCancel(callback: Action) {
+  public onCancel(callback: Action) {
     this.subscription.addListener(callback);
   }
 
-  isCancelled() {
+  public isCancelled() {
     return this.subscription.cancelled;
   }
 }

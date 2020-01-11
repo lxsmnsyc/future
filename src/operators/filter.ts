@@ -44,34 +44,18 @@ class FutureFilter<T> extends Future<T> {
 
     const subscription = new WithUpstreamSubscription(computation);
 
-    const promise = new Promise<T>((resolve, reject) => {
+    const promise = new Promise<T>(async (resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
-      computation.then(
-        value => {
-          if (subscription.cancelled) {
-            return;
-          }
-
-          let result;
-          try {
-            result = this.predicate(value);
-          } catch (err) {
-            rej(err);
-            subscription.cancel();
-            return;
-          }
-
-          if (result) {
-            res(value);
-          }
-        },
-        (err) => {
-          rej(err);
-          subscription.cancel();
-        },
-      );
+      try {
+        const value = await computation;
+        if (this.predicate(value)) {
+          res(value);
+        }
+      } catch (err) {
+        reject(err);
+        subscription.cancel();
+      }
     });
 
     return new Computation<T>(promise, subscription);

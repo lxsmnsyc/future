@@ -46,7 +46,6 @@ class FutureAmbWith<T> extends Future<T> {
 
     const promise = new Promise<T>((resolve, reject) => {
       const res = (value: T) => !main.cancelled && resolve(value);
-      const rej = (error: Error) => !main.cancelled && reject(error);
 
       const computationA = this.future.get();
       const computationB = this.other.get();
@@ -63,7 +62,7 @@ class FutureAmbWith<T> extends Future<T> {
           subscription.cancel();
         },
         error => {
-          rej(error);
+          reject(error);
           subscription.cancel();
         },
       );
@@ -77,7 +76,7 @@ class FutureAmbWith<T> extends Future<T> {
           subscription.cancel();
         },
         error => {
-          rej(error);
+          reject(error);
           subscription.cancel();
         },
       );

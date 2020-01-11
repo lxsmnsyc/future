@@ -38,19 +38,19 @@ class FutureCache<T> extends Future<T> {
   }
 
   get(): Computation<T> {
-    if (!this.computation) {
-      this.computation = this.future.get();
-    }
-
     const subscription = new BooleanSubscription();
 
     const promise = new Promise<T>((resolve, reject) => {
-      if (this.computation) {
-        this.computation.then(
-          value => !subscription.cancelled && resolve(value),
-          error => !subscription.cancelled && reject(error),
-        );
+      if (!this.computation) {
+        this.computation = this.future.get();
       }
+      this.computation.then(
+        value => !subscription.cancelled && resolve(value),
+        error => {
+          reject(error);
+          subscription.cancel();
+        }
+      );
     });
 
     return new Computation<T>(promise, subscription);

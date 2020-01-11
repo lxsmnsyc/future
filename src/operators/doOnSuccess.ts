@@ -46,14 +46,13 @@ class FutureDoOnSuccess<T> extends Future<T> {
     
     const promise = new Promise<T>((resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
       computation.then(
         value => {
           try {
             this.onSuccess(value);
           } catch (err) {
-            rej(err);
+            reject(err);
             subscription.cancel();
             return;
           }
@@ -61,7 +60,7 @@ class FutureDoOnSuccess<T> extends Future<T> {
           res(value);
         },
         err => {
-          rej(err);
+          reject(err);
           subscription.cancel();
         },
       );

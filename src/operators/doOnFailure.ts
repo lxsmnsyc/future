@@ -30,6 +30,7 @@ import { Consumer } from '../utils/types/function';
 import Computation from '../computation';
 import WithUpstreamSubscription from '../utils/subscriptions/with-upstream-subscription';
 import { FutureTransformer } from '../transformer';
+import CompositeError from '../utils/errors/composite-error';
 
 class FutureDoOnFailure<T> extends Future<T> {
   constructor(
@@ -46,24 +47,17 @@ class FutureDoOnFailure<T> extends Future<T> {
     
     const promise = new Promise<T>((resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
-      computation.then(
-        value => {
-          res(value);
-        },
-        err => {
-          try {
-            this.onFailure(err);
-          } catch (e) {
-            rej(e);
-            subscription.cancel();
-            return;
-          }
-          rej(err);
-          subscription.cancel();
-        },
-      );
+      computation.then(res, err => {
+        let reason = err;
+        try {
+          this.onFailure(err);
+        } catch (e) {
+          reason = new CompositeError([err, e]);
+        }
+        reject(reason);
+        subscription.cancel();
+      });
 
     });
 

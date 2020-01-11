@@ -45,9 +45,12 @@ class FutureAmb<T extends Future<any>[]> extends Future<any> {
 
     const promise = new Promise((resolve, reject) => {
       const res = (value: T) => !main.cancelled && resolve(value);
-      const rej = (value: Error) => !main.cancelled && reject(value);
 
       this.futures.forEach((future) => {
+        if (main.cancelled) {
+          return;
+        }
+
         const computation = future.get();
 
         subscription.add(computation);
@@ -61,8 +64,8 @@ class FutureAmb<T extends Future<any>[]> extends Future<any> {
             subscription.cancel();
           }, 
           error => {
-            rej(error);
-            subscription.cancel();
+            reject(error);
+            main.cancel();
           }
         );
       });

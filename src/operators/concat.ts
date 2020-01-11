@@ -41,7 +41,6 @@ class FutureConcat extends Future<any> {
 
     const promise = new Promise<any>((resolve, reject) => {
       const res = (value: any) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
       let current = 0;
 
@@ -62,7 +61,7 @@ class FutureConcat extends Future<any> {
             }
           },
           err => {
-            rej(err);
+            reject(err);
             subscription.cancel();
           },
         );

@@ -48,17 +48,13 @@ class FutureDoOnCancel<T> extends Future<T> {
     
     const promise = new Promise<T>((resolve, reject) => {
       const res = (value: T) => !subscription.cancelled && resolve(value);
-      const rej = (value: Error) => !subscription.cancelled && reject(value);
 
       subscription.addListener(this.onCancel);
 
-      computation.then(
-        res,
-        err => {
-          rej(err);
-          subscription.cancel();
-        },
-      );
+      computation.then(res, err => {
+        reject(err);
+        subscription.cancel();
+      });
     });
 
     return new Computation<T>(promise, subscription);
